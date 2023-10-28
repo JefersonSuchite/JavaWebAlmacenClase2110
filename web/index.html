@@ -35,29 +35,27 @@
         <label for="id_categoria">ID de Categoría:</label>
         <input type="number" id="id_categoria" name="id_categoria" required>
         <br>
-        <button type="submit">Guardar Producto</button>
+        <button class="button" type="submit">Guardar Producto</button>
     </form>
 
-
+<form action="RestarExistencia" method="post">
+    <label for="id_producto_restar">ID del Producto:</label>
+    <input type="text" id="id_producto_restar" name="id_producto_restar" required>
+    <br>
+    <label for="cantidad_restar">Cantidad a Restar:</label>
+    <input type="number" id="cantidad_restar" name="cantidad_restar" required>
+    <br>
+    <button class="button" type="submit">Restar Existencia</button>
+</form>
+    
 <h2>Eliminar Producto</h2>
-<form id="formularioEliminarProducto">
-    <label for="idEliminar">ID del Producto a Eliminar:</label>
-    <input type="number" id="idEliminar" name="idEliminar" required>
-    <br>
-    <button class="button" onclick="eliminarProducto()">Eliminar Producto</button>
-</form>
+        <form id="formEliminarProducto">
+        <label for="id_producto_eliminar">ID del Producto a Eliminar:</label>
+        <input type="text" id="id_producto_eliminar" name="id_producto_eliminar" required>
+        <button class="button" type="button" onclick="eliminarProducto()">Eliminar Producto</button>
+    </form>
 
-<h2>Actualizar Existencia del Producto</h2>
-<form id="formularioActualizarExistencia">
-    <label for="idActualizar">ID del Producto a Actualizar:</label>
-    <input type="number" id="idActualizar" name="idActualizar" required>
-    <br>
-    <label for="nuevaExistencia">Nueva Cantidad en Existencia:</label>
-    <input type="number" id="nuevaExistencia" name="nuevaExistencia" required>
-    <br>
-    <button class="button" onclick="actualizarExistenciaProducto()">Actualizar Existencia</button>
-</form>
-
+<div id="mensajeDiv" style="display: none;"></div>
 </section>
 </div>
     <script>
@@ -90,72 +88,36 @@
                     console.error('Error al cargar productos: ', error);
                 });
         }
-
-        function guardarProducto() {
-    const nombre = document.getElementById("nombre").value;
-    const precio = document.getElementById("precio").value;
-    const existencia = document.getElementById("existencia").value;
-    const idMarca = document.getElementById("idMarca").value;
-    const idCategoria = document.getElementById("idCategoria").value;
-
-    const formData = new FormData();
-    formData.append('nombre', nombre);
-    formData.append('precio', precio);
-    formData.append('existencia', existencia);
-    formData.append('idMarca', idMarca);
-    formData.append('idCategoria', idCategoria);  // Agrega los campos idMarca e idCategoria
-
-    fetch('AgregarProducto', {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => response.text())
-        .then(data => {
-            cargarProductos(); // Cargar la tabla actualizada después de guardar
-        })
-        .catch(error => {
-            console.error('Error al guardar el producto: ', error);
-        });
-}
-
-
-        function eliminarProducto() {
-            const idEliminar = document.getElementById("idEliminar").value;
-
-            const formData = new FormData();
-            formData.append('idEliminar', idEliminar);
-
-            fetch('EliminarProducto', {
-                method: 'POST',
-                body: formData
-            })
+function cargarProductos() {
+            // Realiza una solicitud AJAX para cargar la tabla de productos
+            fetch('MostrarProductos')
                 .then(response => response.text())
                 .then(data => {
-                    cargarProductos(); // Cargar la tabla actualizada después de eliminar
+                    document.getElementById('tablaProductos').innerHTML = data; // Actualizar la tabla
                 })
                 .catch(error => {
-                    console.error('Error al eliminar el producto: ', error);
+                    console.error('Error al cargar productos: ', error);
                 });
         }
 
-        function actualizarExistenciaProducto() {
-            const idActualizar = document.getElementById("idActualizar").value;
-            const nuevaExistencia = document.getElementById("nuevaExistencia").value;
+        function eliminarProducto() {
+            const idProductoEliminar = document.getElementById("id_producto_eliminar").value;
 
-            const formData = new FormData();
-            formData.append('idActualizar', idActualizar);
-            formData.append('nuevaExistencia', nuevaExistencia);
-
-            fetch('ActualizarExistencia', {
+            // Realiza una solicitud AJAX para eliminar el producto y obtener una respuesta
+            fetch('EliminarProducto', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `idEliminar=${idProductoEliminar}`
             })
                 .then(response => response.text())
                 .then(data => {
-                    cargarProductos(); // Cargar la tabla actualizada después de actualizar existencia
+                    alert(data); // Muestra una alerta con la respuesta del servidor
+                    cargarProductos(); // Actualiza la tabla de productos en la misma página
                 })
                 .catch(error => {
-                    console.error('Error al actualizar existencia del producto: ', error);
+                    console.error('Error al eliminar el producto: ', error);
                 });
         }
     </script>
