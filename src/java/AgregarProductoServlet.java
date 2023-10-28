@@ -1,11 +1,11 @@
 import Clases.ConexionBaseDeDatos;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 @WebServlet("/AgregarProducto")
 public class AgregarProductoServlet extends HttpServlet {
@@ -22,7 +22,7 @@ public class AgregarProductoServlet extends HttpServlet {
                 int idMarca = Integer.parseInt(request.getParameter("id_marca"));
                 int idCategoria = Integer.parseInt(request.getParameter("id_categoria"));
 
-                String consulta = "INSERT INTO producto (id_producto, nombre_productocol, precio, existencia, id_marca, id_categoria, fecha_vencimiento) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                String consulta = "INSERT INTO producto (id_producto, nombre_productocol, precio, existencia, id_marca, id_categoria) VALUES (?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement preparedStatement = connection.prepareStatement(consulta)) {
                     preparedStatement.setString(1, idProducto);
                     preparedStatement.setString(2, nombre);
@@ -30,7 +30,6 @@ public class AgregarProductoServlet extends HttpServlet {
                     preparedStatement.setInt(4, existencia);
                     preparedStatement.setInt(5, idMarca);
                     preparedStatement.setInt(6, idCategoria);
-                    preparedStatement.setDate(7, null); // Aquí puedes establecer la fecha de vencimiento, o dejarla como NULL si no la utilizas
 
                     int filasAfectadas = preparedStatement.executeUpdate();
 
