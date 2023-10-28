@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tabla de Productos</title>
+    <link href="css/Estilos.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <div id="container">
+<section id="content">
+    <header>
+<div class="tablaProductos">
+    <h1>Tabla de Productos</h1>
+    <button class="btn-green" id="cargarProductosButton">Cargar Productos</button>
+    <table border="1" id="tablaProductos">
+        <!-- La tabla de productos se llenará aquí -->
+    </table>
+</div>
+        </header>
+    <h2>Agregar Producto</h2>
+<form id="formularioProducto">
+    <label for="id_producto">ID del Producto:</label>
+    <input type="text" id="id_producto" name="id_producto" required>
+    <br>
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre" name="nombre" required>
+    <br>
+    <label for="precio">Precio:</label>
+    <input type="number" id="precio" name="precio" step="0.01" required>
+    <br>
+    <label for="existencia">Existencia:</label>
+    <input type="number" id="existencia" name="existencia" required>
+    <br>
+    <label for="idMarca">ID de Marca:</label>
+    <input type="number" id="idMarca" name="idMarca" required>
+    <br>
+    <label for="idCategoria">ID de Categoría:</label>
+    <input type="number" id="idCategoria" name="idCategoria" required>
+    <br>
+    <button class="button" onclick="guardarProducto()">Guardar Producto</button>
+    <br>
+</form>
+
+
+<h2>Eliminar Producto</h2>
+<form id="formularioEliminarProducto">
+    <label for="idEliminar">ID del Producto a Eliminar:</label>
+    <input type="number" id="idEliminar" name="idEliminar" required>
+    <br>
+    <button class="button" onclick="eliminarProducto()">Eliminar Producto</button>
+</form>
+
+<h2>Actualizar Existencia del Producto</h2>
+<form id="formularioActualizarExistencia">
+    <label for="idActualizar">ID del Producto a Actualizar:</label>
+    <input type="number" id="idActualizar" name="idActualizar" required>
+    <br>
+    <label for="nuevaExistencia">Nueva Cantidad en Existencia:</label>
+    <input type="number" id="nuevaExistencia" name="nuevaExistencia" required>
+    <br>
+    <button class="button" onclick="actualizarExistenciaProducto()">Actualizar Existencia</button>
+</form>
+
+</section>
+</div>
+    <script>
+        document.getElementById("cargarProductosButton").addEventListener("click", function() {
+            cargarProductos();
+        });
+
+        document.getElementById("formularioProducto").addEventListener("submit", function(event) {
+            event.preventDefault();
+            guardarProducto();
+        });
+
+        document.getElementById("formularioEliminarProducto").addEventListener("submit", function(event) {
+            event.preventDefault();
+            eliminarProducto();
+        });
+
+        document.getElementById("formularioActualizarExistencia").addEventListener("submit", function(event) {
+            event.preventDefault();
+            actualizarExistenciaProducto();
+        });
+
+        function cargarProductos() {
+            fetch('MostrarProductos') // Hacer una solicitud GET al servlet MostrarProductos
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('tablaProductos').innerHTML = data;
+                })
+                .catch(error => {
+                    console.error('Error al cargar productos: ', error);
+                });
+        }
+
+        function guardarProducto() {
+    const nombre = document.getElementById("nombre").value;
+    const precio = document.getElementById("precio").value;
+    const existencia = document.getElementById("existencia").value;
+    const idMarca = document.getElementById("idMarca").value;
+    const idCategoria = document.getElementById("idCategoria").value;
+
+    const formData = new FormData();
+    formData.append('nombre', nombre);
+    formData.append('precio', precio);
+    formData.append('existencia', existencia);
+    formData.append('idMarca', idMarca);
+    formData.append('idCategoria', idCategoria);  // Agrega los campos idMarca e idCategoria
+
+    fetch('AgregarProducto', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.text())
+        .then(data => {
+            cargarProductos(); // Cargar la tabla actualizada después de guardar
+        })
+        .catch(error => {
+            console.error('Error al guardar el producto: ', error);
+        });
+}
+
+
+        function eliminarProducto() {
+            const idEliminar = document.getElementById("idEliminar").value;
+
+            const formData = new FormData();
+            formData.append('idEliminar', idEliminar);
+
+            fetch('EliminarProducto', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.text())
+                .then(data => {
+                    cargarProductos(); // Cargar la tabla actualizada después de eliminar
+                })
+                .catch(error => {
+                    console.error('Error al eliminar el producto: ', error);
+                });
+        }
+
+        function actualizarExistenciaProducto() {
+            const idActualizar = document.getElementById("idActualizar").value;
+            const nuevaExistencia = document.getElementById("nuevaExistencia").value;
+
+            const formData = new FormData();
+            formData.append('idActualizar', idActualizar);
+            formData.append('nuevaExistencia', nuevaExistencia);
+
+            fetch('ActualizarExistencia', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.text())
+                .then(data => {
+                    cargarProductos(); // Cargar la tabla actualizada después de actualizar existencia
+                })
+                .catch(error => {
+                    console.error('Error al actualizar existencia del producto: ', error);
+                });
+        }
+    </script>
+</body>
+</html>
